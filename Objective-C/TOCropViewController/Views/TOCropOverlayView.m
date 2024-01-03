@@ -1,7 +1,7 @@
 //
 //  TOCropOverlayView.m
 //
-//  Copyright 2015-2022 Timothy Oliver. All rights reserved.
+//  Copyright 2015-2018 Timothy Oliver. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to
@@ -28,6 +28,8 @@ static const CGFloat kTOCropOverLayerCornerWidth = 20.0f;
 
 @property (nonatomic, strong) NSArray *horizontalGridLines;
 @property (nonatomic, strong) NSArray *verticalGridLines;
+@property (nonatomic, strong) NSArray *custHorizontalGridLines;
+@property (nonatomic, strong) NSArray *custVerticalGridLines;
 
 @property (nonatomic, strong) NSArray *outerLineViews;   //top, right, bottom, left
 
@@ -64,8 +66,12 @@ static const CGFloat kTOCropOverLayerCornerWidth = 20.0f;
     _bottomRightLineViews = @[newLineView(), newLineView()];
     
     self.displayHorizontalGridLines = YES;
+    //self.displayCustHorizontalGridLines = YES;
     self.displayVerticalGridLines = YES;
+    //self.displayCustVerticalGridLines = YES;
 }
+
+//try adding another method setCustomGrid. check with a global variable if the grid is set, else call [self layoutLines]
 
 - (void)setFrame:(CGRect)frame
 {
@@ -155,6 +161,56 @@ static const CGFloat kTOCropOverLayerCornerWidth = 20.0f;
         frame.origin.x = (padding * (i+1)) + (thickness * i);
         lineView.frame = frame;
     }
+    
+    if(self.displayCustHorizontalGridLines) {
+        //custome grid lines - horizontal - added by Harshal
+        numberOfLines = self.custHorizontalGridLines.count;
+        
+        //for 1st line
+        UIView *lineView = self.custHorizontalGridLines[0];
+        lineView.backgroundColor = [UIColor blackColor];//Red -> [UIColor colorWithRed:1.0 green:0.25 blue:0.3 alpha:1.0];//[UIColor blackColor];// Green -> [UIColor colorWithRed:0.02 green:0.48 blue:0.08 alpha:1.0];
+        lineView.alpha = 0.6;
+        CGRect frame = CGRectZero;
+        frame.size.height = CGRectGetHeight(self.bounds) * self.percH/100;//thickness*3;
+        frame.size.width = CGRectGetWidth(self.bounds);
+        frame.origin.y = 0;//CGRectGetHeight(self.bounds) * self.percH/100;
+        lineView.frame = frame;
+    
+        //for 2nd line
+        lineView = self.custHorizontalGridLines[1];
+        lineView.backgroundColor = [UIColor blackColor];// [UIColor blackColor];// Green -> [UIColor colorWithRed:0.02 green:0.48 blue:0.08 alpha:1.0];//Red -> [UIColor colorWithRed:1.0 green:0.25 blue:0.3 alpha:1.0];//[UIColor blackColor];
+        lineView.alpha = 0.6;
+        frame = CGRectZero;
+        frame.size.height = (CGRectGetHeight(self.bounds) * self.percH/100);//thickness*3;
+        frame.size.width = CGRectGetWidth(self.bounds);
+        frame.origin.y =  CGRectGetHeight(self.bounds) - (CGRectGetHeight(self.bounds) * self.percH/100);
+        lineView.frame = frame;
+    }
+    
+    if(self.displayCustVerticalGridLines) {
+        //custome grid lines - horizontal - added by Harshal
+        numberOfLines = self.custVerticalGridLines.count;
+        
+        //for 1st line
+        UIView *lineView = self.custVerticalGridLines[0];
+        lineView.backgroundColor = [UIColor blackColor];// [UIColor blackColor];// Green -> [UIColor colorWithRed:0.02 green:0.48 blue:0.08 alpha:1.0];// Red -> [UIColor colorWithRed:1.0 green:0.25 blue:0.3 alpha:1.0];
+        lineView.alpha = 0.4;
+        CGRect frame = CGRectZero;
+        frame.size.width = CGRectGetWidth(self.bounds) * self.percV/100;//thickness*3;
+        frame.size.height = CGRectGetHeight(self.bounds);
+        frame.origin.x = 0;//CGRectGetWidth(self.bounds) * self.percV/100;
+        lineView.frame = frame;
+    
+        //for 2nd line
+        lineView = self.custVerticalGridLines[1];
+        lineView.backgroundColor = [UIColor blackColor];//[UIColor blackColor];//Green -> [UIColor colorWithRed:0.02 green:0.48 blue:0.08 alpha:1.0];// Red -> [UIColor colorWithRed:1.0 green:0.25 blue:0.3 alpha:1.0];//[UIColor blackColor];
+        lineView.alpha = 0.4;
+        frame = CGRectZero;
+        frame.size.width = CGRectGetWidth(self.bounds) * self.percV/100;//thickness*3;
+        frame.size.height = CGRectGetHeight(self.bounds);
+        frame.origin.x =  CGRectGetWidth(self.bounds) - (CGRectGetWidth(self.bounds) * self.percV/100);
+        lineView.frame = frame;
+    }
 }
 
 - (void)setGridHidden:(BOOL)hidden animated:(BOOL)animated
@@ -199,6 +255,21 @@ static const CGFloat kTOCropOverLayerCornerWidth = 20.0f;
     [self setNeedsDisplay];
 }
 
+- (void)setDisplayCustHorizontalGridLines:(BOOL)displayCustHorizontalGridLines {
+    _displayCustHorizontalGridLines = displayCustHorizontalGridLines;
+    
+    [self.custHorizontalGridLines enumerateObjectsUsingBlock:^(UIView *__nonnull lineView, NSUInteger idx, BOOL * __nonnull stop) {
+        [lineView removeFromSuperview];
+    }];
+    
+    if (_displayCustHorizontalGridLines) {
+        self.custHorizontalGridLines = @[[self createNewLineView], [self createNewLineView]];
+    } else {
+        self.custHorizontalGridLines = @[];
+    }
+    [self setNeedsDisplay];
+}
+
 - (void)setDisplayVerticalGridLines:(BOOL)displayVerticalGridLines {
     _displayVerticalGridLines = displayVerticalGridLines;
     
@@ -210,6 +281,21 @@ static const CGFloat kTOCropOverLayerCornerWidth = 20.0f;
         self.verticalGridLines = @[[self createNewLineView], [self createNewLineView]];
     } else {
         self.verticalGridLines = @[];
+    }
+    [self setNeedsDisplay];
+}
+
+- (void)setDisplayCustVerticalGridLines:(BOOL)displayCustVerticalGridLines {
+    _displayCustVerticalGridLines = displayCustVerticalGridLines;
+    
+    [self.custVerticalGridLines enumerateObjectsUsingBlock:^(UIView *__nonnull lineView, NSUInteger idx, BOOL * __nonnull stop) {
+        [lineView removeFromSuperview];
+    }];
+    
+    if (_displayCustVerticalGridLines) {
+        self.custVerticalGridLines = @[[self createNewLineView], [self createNewLineView]];
+    } else {
+        self.custVerticalGridLines = @[];
     }
     [self setNeedsDisplay];
 }

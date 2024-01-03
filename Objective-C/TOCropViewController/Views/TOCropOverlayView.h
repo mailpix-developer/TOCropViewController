@@ -1,7 +1,7 @@
 //
 //  TOCropOverlayView.h
 //
-//  Copyright 2015-2022 Timothy Oliver. All rights reserved.
+//  Copyright 2015-2018 Timothy Oliver. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to
@@ -29,11 +29,24 @@ NS_ASSUME_NONNULL_BEGIN
 /** Hides the interior grid lines, sans animation. */
 @property (nonatomic, assign) BOOL gridHidden;
 
+/** Hides the interior grid lines, sans animation. */
+@property (nonatomic, assign) BOOL custGridHidden;
+
 /** Add/Remove the interior horizontal grid lines. */
 @property (nonatomic, assign) BOOL displayHorizontalGridLines;
 
 /** Add/Remove the interior vertical grid lines. */
 @property (nonatomic, assign) BOOL displayVerticalGridLines;
+
+/** Add/Remove the interior horizontal grid lines. */
+@property (nonatomic, assign) BOOL displayCustHorizontalGridLines;
+
+/** Add/Remove the interior vertical grid lines. */
+@property (nonatomic, assign) BOOL displayCustVerticalGridLines;
+
+
+@property (nonatomic, assign) CGFloat percH;
+@property (nonatomic, assign) CGFloat percV;
 
 /** Shows and hides the interior grid lines with an optional crossfade animation. */
 - (void)setGridHidden:(BOOL)hidden animated:(BOOL)animated;
